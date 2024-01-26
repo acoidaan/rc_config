@@ -1,0 +1,41 @@
+" Esta opción debe estar la primera porque cambia otras opciones
+" nocompatible permite funciones que VI no soporta
+set nocompatible
+
+set number
+
+" Muestra la posición del cursor en todo momento
+set ruler
+
+" Al presionar tab, inserta 2 espacios (Guía de estilo de Google)
+set expandtab
+
+" Muestra los tabs existente con 2 espacios
+set tabstop=2
+
+" shiftwidth (el número de espacios a usar cuando se indenta)
+set sw=2
+
+syntax on
+
+" Volver a la última posición al abrir un fichero
+" https://stackoverflow.com/questions/7894330/preserve-last-editing-position-in-vim
+autocmd BufReadPost *
+     \ if line("'\"") > 0 && line("'\"") <= line("$") |
+     \   exe "normal! g`\"" |
+     \ endif
+" Activa el reconocimiento de detección de ficheros
+
+ filetype on
+ filetype plugin on
+ filetype indent on
+
+ " Al detectar los archivos make, implementa una serie de parámetros para que     el
+ " tabulador funcione correctamente en el MakeFile
+
+ autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+
+" Ancho de texto a 80
+set tw=80
+
+
