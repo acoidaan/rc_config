@@ -37,5 +37,3 @@ autocmd BufReadPost *
 
 " Ancho de texto a 80
 set tw=80
-
-
