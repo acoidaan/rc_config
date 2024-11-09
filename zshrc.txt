@@ -105,13 +105,59 @@ function cya() {
 }
 
 function ggit() {
-  git add .
-  echo -e "\n[!] Se ha hecho un git add del directorio actual\n\n"
-  git commit -am "${1}"
-  echo -e "\n[!] Se ha hecho un git commit con el mensaje: ${1}\n\n"
-  git push
-  echo -e "\n[!] Se ha hecho un git push de los cambios actuales\n\n"
-  echo -e "\n [!] Git push completado con exito\n\n!"
+    # Verificar si se proporcionó un mensaje de commit
+    if [[ -z "${1}" ]]; then
+        echo -e "\n[ERROR] Debes proporcionar un mensaje para el commit"
+        echo -e "Uso: ggit \"mensaje del commit\"\n"
+        return 1
+    fi
+
+    # Verificar si estamos en un repositorio git
+    if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        echo -e "\n[ERROR] No estás en un repositorio git\n"
+        return 1
+    fi
+
+    # Verificar si hay cambios para commitear
+    if [[ -z "$(git status --porcelain)" ]]; then
+        echo -e "\n[INFO] No hay cambios para commitear\n"
+        return 0
+    fi
+
+    # Git add
+    echo -e "\n[INFO] Ejecutando git add ."
+    if ! git add .; then
+        echo -e "\n[ERROR] Error al ejecutar git add\n"
+        return 1
+    fi
+    echo -e "[✓] Git add completado con éxito\n"
+
+    # Git commit
+    echo -e "[INFO] Ejecutando git commit con mensaje: ${1}"
+    if ! git commit -m "${1}"; then
+        echo -e "\n[ERROR] Error al ejecutar git commit\n"
+        return 1
+    fi
+    echo -e "[✓] Git commit completado con éxito\n"
+
+    # Verificar si hay una rama remota configurada
+    if ! git remote get-url origin >/dev/null 2>&1; then
+        echo -e "[ERROR] No hay un repositorio remoto configurado\n"
+        return 1
+    fi
+
+    # Git push
+    echo -e "[INFO] Ejecutando git push"
+    if ! git push; then
+        echo -e "\n[ERROR] Error al ejecutar git push\n"
+        return 1
+    fi
+    echo -e "[✓] Git push completado con éxito\n"
+
+    # Mostrar estado final
+    echo -e "\n[✓] Proceso completado exitosamente"
+    echo -e "- Rama actual: $(git branch --show-current)"
+    echo -e "- Último commit: $(git log -1 --pretty=format:'%h - %s')\n"
 }
 
 alias qtsp="LANG=C qtspim"
@@ -131,3 +177,5 @@ alias lla='lsd -lha --group-dirs=first'
 alias ls='lsd --group-dirs=first'
 
 alias vim='nvim'
+
+fortune | cowsay -f tux
